@@ -1,10 +1,11 @@
-import { client } from "apis";
-import { AxiosError } from "axios";
-import CountIndicator from "components/CountIndicator";
-import Todo from "components/Todo";
-import TodoInput from "components/TodoInput";
-import { useState } from "react";
-import { useEffect } from "react";
+import { client } from 'apis';
+import axios, { AxiosError } from 'axios';
+import CountIndicator from 'components/CountIndicator';
+import Todo from 'components/Todo';
+import TodoInput from 'components/TodoInput';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import { useMyQuery } from 'myQuery/useMyQuery';
 
 export interface TodoType {
   id: number;
@@ -13,27 +14,34 @@ export interface TodoType {
 }
 
 function App() {
-  const [todos, setTodos] = useState<TodoType[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<AxiosError | null>(null);
+  //const [todos, setTodos] = useState<TodoType[]>([]);
 
-  useEffect(() => {
-    setIsLoading(true);
-    (async () => {
-      try {
-        const response = await client.get<TodoType[]>("/todos");
-        setTodos(response.data);
-      } catch (e) {
-        if (e instanceof AxiosError) {
-          setError(e);
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    })();
-  }, []);
+  const handleCheckTodo = () => {};
+  const handleDeleteTodo = () => {};
+  const handleAddTodo = () => {};
 
-  const handleAddTodo = async (title: string) => {
+  let todos = [];
+  const { response, isLoading, error } = useMyQuery('todos', () =>
+    axios.get('http://localhost:4000/todos').then((res) => res.data),
+  );
+
+  if (isLoading) return <>...Loading</>;
+  if (error) return <>Error!</>;
+
+  return (
+    <>
+      {todos?.map((todo) => (
+        <Todo key={todo.id} todo={todo} handleCheckTodo={handleCheckTodo} handleDeleteTodo={handleDeleteTodo} />
+      ))}
+      <TodoInput handleAddTodo={handleAddTodo} />
+      <CountIndicator completedCount={todos?.filter((todo) => todo.completed).length} />
+    </>
+  );
+}
+
+export default App;
+
+/* const handleAddTodo = async (title: string) => {
     try {
       const lastTodo = todos.at(-1);
       const newTodo = {
@@ -89,25 +97,4 @@ function App() {
     }
   };
 
-  if (isLoading) return <>...Loading</>;
-  if (error) return <>Error!</>;
-
-  return (
-    <>
-      {todos.map((todo) => (
-        <Todo
-          key={todo.id}
-          todo={todo}
-          handleCheckTodo={handleCheckTodo}
-          handleDeleteTodo={handleDeleteTodo}
-        />
-      ))}
-      <TodoInput handleAddTodo={handleAddTodo} />
-      <CountIndicator
-        completedCount={todos.filter((todo) => todo.completed).length}
-      />
-    </>
-  );
-}
-
-export default App;
+*/
