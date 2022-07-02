@@ -1,5 +1,4 @@
-import { TodoType } from "App";
-import React from "react";
+import { TodoType } from 'App';
 
 interface TodoProps {
   todo: TodoType;
@@ -12,11 +11,7 @@ const Todo = ({ todo, handleCheckTodo, handleDeleteTodo }: TodoProps) => {
 
   return (
     <div>
-      <input
-        type="checkbox"
-        checked={completed}
-        onChange={() => handleCheckTodo(id)}
-      />
+      <input type='checkbox' checked={completed} onChange={() => handleCheckTodo(id)} />
       <span>{title}</span>
       <button onClick={() => handleDeleteTodo(id)}>X</button>
     </div>
